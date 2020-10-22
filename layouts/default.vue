@@ -82,6 +82,11 @@ export default {
         },
         {
           icon: 'mdi-chart-bubble',
+          title: 'Users',
+          to: '/tb_users',
+        },
+        {
+          icon: 'mdi-chart-bubble',
           title: 'Inventory',
           to: '/inventory',
         },
