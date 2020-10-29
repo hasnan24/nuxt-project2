@@ -3,20 +3,68 @@
     <v-row class="mb-6">
       <v-col v-for="(item, idx) in users" :key="idx" class="mb-2" cols="3">
         <v-card outlined tile height="100%">
-          <v-card-title
-            class="headline"
-            :style="'color: white; background: ' + choseColor(idx)"
-            >{{ item.name.first }} {{ item.name.last }}</v-card-title
-          >
-          <v-card-text class="mb-6">{{ item.cell }}</v-card-text>
+          <v-img height="165px" :style="'background: ' + choseColor(idx)">
+            <v-app-bar flat color="rgba(0, 0, 0, 0)">
+              <v-toolbar-title class="title white--text pl-0">
+                {{ item.name.first }} {{ item.name.last }}
+              </v-toolbar-title>
+            </v-app-bar>
+
+            <v-card-title class="white--text">
+              <v-avatar size="56">
+                <img :src="item.picture.medium" />
+              </v-avatar>
+              <p class="ml-3">{{ item.name.title }}. {{ item.name.first }}</p>
+              <p style="font-size: 12px">{{ item.email }}</p>
+            </v-card-title>
+          </v-img>
+          <v-card-text class="mb-8">{{ item.cell }}</v-card-text>
           <v-card-actions style="position: absolute; bottom: 0">
             <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text>Cancel</v-btn>
-            <v-btn color="blue darken-1" text>OK</v-btn>
+            <v-btn color="blue darken-1" text @click="dialogDetil(item)"
+              >Detail</v-btn
+            >
             <v-spacer></v-spacer>
           </v-card-actions>
         </v-card>
       </v-col>
+      <v-dialog v-model="dialog" persistent max-width="500">
+        <v-card class="animation-background" style="padding: 2px">
+          <div
+            v-for="(user, idx) in userDetil"
+            :key="idx"
+            style="background: white"
+          >
+            <v-row no-gutters>
+              <v-col cols="6">
+                <v-avatar class="profile" color="grey" size="220" tile>
+                  <v-img :src="user.picture.large" :cover="true"></v-img>
+                </v-avatar>
+              </v-col>
+              <v-col cols="6">
+                <v-card-title class="headline">
+                  {{ user.name.first }}
+                </v-card-title>
+                <v-card-text
+                  >Let Google help apps determine location. This means sending
+                  anonymous location data to Google, even when no apps are
+                  running.</v-card-text
+                >
+              </v-col>
+            </v-row>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="green darken-1" text @click="closeDetil">
+                Disagree
+              </v-btn>
+              <v-btn color="green darken-1" text @click="dialog = false">
+                Agree
+              </v-btn>
+            </v-card-actions>
+          </div>
+        </v-card>
+      </v-dialog>
     </v-row>
   </v-container>
 </template>
@@ -24,21 +72,12 @@
 <script>
 export default {
   data: () => ({
-    color: '',
+    dialog: false,
     id: '',
-    username: '',
-    creator: [],
-    creator2: [],
-    items: [],
     users: [],
+    userDetil: [],
   }),
 
-  computed: {
-    cols() {
-      const { sm } = this.$vuetify.breakpoint
-      return sm ? [9, 3] : [6, 6]
-    },
-  },
   created() {
     this.initialize()
   },
@@ -54,10 +93,10 @@ export default {
         .catch(function (error) {
           console.log(error)
         })
-    }, // seed
+    },
     choseColor(id) {
       if (id % 4 === 0) {
-        return 'lime'
+        return '#607D8B'
       } else if (id % 4 === 1) {
         return 'purple'
       } else if (id % 4 === 2) {
@@ -66,6 +105,57 @@ export default {
         return `indigo`
       }
     },
+    dialogDetil(dt) {
+      this.dialog = true
+      this.userDetil = [dt]
+    },
+    closeDetil() {
+      this.dialog = false
+      this.userDetil = []
+    },
   },
 }
 </script>
+
+<style>
+.animation-background {
+  animation: colorchange 15s linear 1s infinite; /* animation-name followed by duration in seconds*/
+  /* you could also use milliseconds (ms) or something like 2.5s */
+}
+
+@keyframes colorchange {
+  0% {
+    background: magenta;
+  }
+  25% {
+    background: rgb(68, 236, 68);
+  }
+  50% {
+    background: rgb(128, 108, 245);
+  }
+  75% {
+    background: rgb(248, 193, 11);
+  }
+  100% {
+    background: magenta;
+  }
+}
+
+@-webkit-keyframes colorchange /* Safari and Chrome - necessary duplicate */ {
+  0% {
+    background: magenta;
+  }
+  25% {
+    background: rgb(68, 236, 68);
+  }
+  50% {
+    background: rgb(128, 108, 245);
+  }
+  75% {
+    background: rgb(248, 193, 11);
+  }
+  100% {
+    background: magenta;
+  }
+}
+</style>
