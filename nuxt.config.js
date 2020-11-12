@@ -4,6 +4,7 @@ export default {
   server: {
     port: 8080,
   },
+  serverMiddleware: ['~/api/app.js'],
   // Global page headers (https://go.nuxtjs.dev/config-head)
   head: {
     titleTemplate: '%s - nuxt-project2',

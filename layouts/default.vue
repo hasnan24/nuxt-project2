@@ -70,16 +70,16 @@ export default {
       drawer: false,
       fixed: false,
       items: [
-        {
-          icon: 'mdi-apps',
-          title: 'Welcome',
-          to: '/',
-        },
-        {
-          icon: 'mdi-chart-bubble',
-          title: 'Inspire',
-          to: '/inspire',
-        },
+        // {
+        //   icon: 'mdi-apps',
+        //   title: 'Welcome',
+        //   to: '/',
+        // },
+        // {
+        //   icon: 'mdi-chart-bubble',
+        //   title: 'Inspire',
+        //   to: '/inspire',
+        // },
         {
           icon: 'mdi-chart-bubble',
           title: 'Users',
@@ -87,9 +87,14 @@ export default {
         },
         {
           icon: 'mdi-chart-bubble',
-          title: 'Inventory',
-          to: '/inventory',
+          title: 'Users2',
+          to: '/list_users',
         },
+        // {
+        //   icon: 'mdi-chart-bubble',
+        //   title: 'Users3',
+        //   to: '/tbusers2',
+        // },
       ],
       miniVariant: false,
       right: true,
