@@ -3,7 +3,6 @@
     <v-btn v-show="btnAdd" block color="green" rounded @click="addUser">
       Add User
     </v-btn>
-    <!--Change to Forms -->
     <template v-if="addForm">
       <v-form ref="form" v-model="valid" lazy-validation>
         <v-text-field
@@ -81,7 +80,7 @@
           <template v-slot:activator="{ on, attrs }">
             <v-text-field
               v-model="computedDateFormatted"
-              label="Date (read only text field)"
+              label="Date of Birth"
               hint="MM/DD/YYYY format"
               persistent-hint
               prepend-icon="mdi-calendar"
@@ -91,15 +90,15 @@
             ></v-text-field>
           </template>
           <v-date-picker
-            v-model="date"
+            v-model="adduser.dob"
             no-title
             @input="menu2 = false"
           ></v-date-picker>
         </v-menu>
-        <p class="d-none d-print-block">
+        <!-- <p class="d-none d-print-block">
           Date in ISO format:
           <strong>{{ (adduser.dob = date) }}</strong>
-        </p>
+        </p> -->
         <v-btn
           :disabled="!valid"
           color="success"
@@ -108,8 +107,24 @@
         >
           Validate
         </v-btn>
+        <v-btn color="yellow" @click="cancelForm"> Cancel </v-btn>
       </v-form>
+      <v-dialog v-model="dialogAddFailed" width="500">
+        <v-card>
+          <v-card-title class="headline red"> Failed </v-card-title>
 
+          <v-card-text> {{ dialogAddDescription }} </v-card-text>
+
+          <v-divider></v-divider>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" text @click="dialogAddFailed = false">
+              Ok
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
       <!-- <v-card>
         <v-card-title>
           <span class="headline">Add User</span>
@@ -267,6 +282,8 @@
 export default {
   data: (vm) => ({
     addForm: false,
+    dialogAddFailed: false,
+    dialogAddDescription: '',
     btnAdd: true,
     users: [],
     adduser: {
@@ -325,9 +342,12 @@ export default {
       if (this.$refs.form.validate()) {
         await this.$axios.$post('/tb_users2/add', this.adduser).then((res) => {
           if (res.response === 'Success') {
-            window.location = '/tbusers2'
+            this.cancelForm()
+            this.getUsers()
           } else if (res.response === 'Failed') {
-            window.location = '/tbusers2'
+            this.dialogAddFailed = true
+            this.dialogAddDescription = res.error
+            if (res.error === 'Email has been used') this.adduser.mail = ''
           }
         })
       }

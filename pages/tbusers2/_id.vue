@@ -102,24 +102,37 @@
             ></v-text-field>
           </template>
           <v-date-picker
-            v-model="date"
+            v-model="edituser.dob"
             no-title
             @input="menu2 = false"
           ></v-date-picker>
         </v-menu>
-        <p class="d-none d-print-block">
-          Date in ISO format:
-          <strong>{{ (edituser.dob = date) }}</strong>
-        </p>
         <v-btn
           :disabled="!valid"
           color="success"
           class="mr-4"
-          @click="addUserAction"
+          @click="editUserAction"
         >
           Validate
         </v-btn>
+        <v-btn color="yellow" @click="cancelForm"> Cancel </v-btn>
       </v-form>
+      <v-dialog v-model="dialogEditFailed" width="500">
+        <v-card>
+          <v-card-title class="headline red"> Failed </v-card-title>
+
+          <v-card-text> {{ dialogEditDescription }} </v-card-text>
+
+          <v-divider></v-divider>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" text @click="dialogEditFailed = false">
+              Ok
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
 
       <!-- <v-card>
         <v-card-title>
@@ -262,6 +275,8 @@ export default {
     idAction: '',
     editForm: false,
     deleteAlert: false,
+    dialogEditFailed: false,
+    dialogEditDescription: '',
     user_data: [],
     edituser: {
       id: '',
@@ -320,9 +335,9 @@ export default {
         .$post('/tb_users2/delete', { id: this.id })
         .then((res) => {
           if (res.response === 'Success') {
-            window.location = '/tbusers2'
+            this.$router.push('/tbusers2')
           } else if (res.response === 'Failed') {
-            window.location = '/tbusers2'
+            this.$router.push('/tbusers2')
           }
         })
     },
@@ -331,13 +346,12 @@ export default {
         .$post('/tb_users2/update', this.edituser)
         .then((res) => {
           if (res.response === 'Success') {
-            window.location = '/tbusers2'
+            this.$router.push('/tbusers2')
           } else if (res.response === 'Failed') {
-            window.location = '/tbusers2'
+            this.dialogEditFailed = true
+            this.dialogEditDescription = res.error
+            if (res.error === 'Email has been used') this.edituser.mail = ''
           }
-        })
-        .catch((err) => {
-          console.log(err)
         })
     },
     editUser(idUser, data) {
@@ -357,6 +371,9 @@ export default {
 
       const [year, month, day] = date.split('-')
       return `${month}/${day}/${year}`
+    },
+    cancelForm() {
+      this.editForm = false
     },
   },
 }

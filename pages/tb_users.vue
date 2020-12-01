@@ -61,14 +61,7 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="blue darken-1" text @click="close"> Cancel </v-btn>
-              <v-btn
-                :href="'/tb_users'"
-                color="blue darken-1"
-                text
-                @click="save"
-              >
-                Save
-              </v-btn>
+              <v-btn color="blue darken-1" text @click="save"> Save </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -120,14 +113,7 @@
               <v-btn color="blue darken-1" text @click="closeEdit">
                 Cancel
               </v-btn>
-              <v-btn
-                :href="'/tb_users'"
-                color="blue darken-1"
-                text
-                @click="edit"
-              >
-                Save
-              </v-btn>
+              <v-btn color="blue darken-1" text @click="edit"> Save </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -257,20 +243,19 @@ export default {
       this.editedIndex = this.desserts.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialogDelete = true
-      if (this.deleteid) {
-        this.deleteid = ''
-      } else {
-        this.deleteid = item.id
-      }
+      this.deleteid = item.id
     },
 
     async deleteItemConfirm() {
-      this.desserts = await this.$axios.$delete(
+      const h = await this.$axios.delete(
         'http://localhost:3000/users/' + this.deleteid
       )
-      this.deleteid = ''
-      // this.desserts.splice(this.editedIndex, 1)
-      this.closeDelete()
+      if (h.status === 200) {
+        this.deleteid = ''
+        // this.desserts.splice(this.editedIndex, 1)
+        this.closeDelete()
+        this.initialize()
+      }
     },
 
     close() {
@@ -298,23 +283,23 @@ export default {
     },
 
     async save() {
-      // if (this.editedIndex > -1) {
-      //   Object.assign(this.desserts[this.editedIndex], this.editedItem)
-      // } else {
-      // }
-      // this.close()
-
-      this.desserts = await this.$axios.$post(
-        'http://localhost:3000/users',
-        this.editedItem
-      )
+      await this.$axios.$post('http://localhost:3000/users', this.editedItem)
+      this.initialize()
       this.close()
     },
     async edit() {
-      this.desserts = await this.$axios.$put(
-        'http://localhost:3000/users/' + this.deleteid,
-        this.editedItem
-      )
+      try {
+        const s = await this.$axios.put(
+          'http://localhost:3000/users/' + this.deleteid,
+          this.editedItem
+        )
+        if (s.status === 200) {
+          this.initialize()
+        }
+      } catch (error) {
+        console.log(error)
+      }
+
       this.closeEdit()
     },
   },

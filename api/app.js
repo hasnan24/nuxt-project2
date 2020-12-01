@@ -34,7 +34,7 @@ app.post('/tb_users2/add', (req, res) => {
   const phone = req.body.phone
   const mail = req.body.mail
   const dob = req.body.dob
-
+  let count = ''
   if (
     firstName &&
     lastName &&
@@ -47,6 +47,10 @@ app.post('/tb_users2/add', (req, res) => {
   ) {
     const sql =
       'INSERT INTO persons2 (firstName,lastName,nis,gender,address,phone,mail,dob) VALUES ?'
+    const sql2 =
+      `SELECT mail, COUNT(mail) AS 'jumlah' FROM persons2 WHERE mail = '` +
+      mail +
+      `'`
     const value = [
       [firstName, lastName, nis, gender, address, phone, mail, dob],
     ]
@@ -60,16 +64,28 @@ app.post('/tb_users2/add', (req, res) => {
       mail,
       dob,
     }
-
-    database.query(sql, [value], (err, result) => {
-      if (err) throw err
-      console.log('Successfully Register ' + firstName)
-      const response = {
-        response: 'Success',
-        action: 'Insert',
-        data,
+    database.query(sql2, (errc, resultsc, fields) => {
+      if (errc) throw errc
+      count = resultsc[0].jumlah
+      if (count === 0) {
+        database.query(sql, [value], (err, result) => {
+          if (err) throw err
+          console.log('Successfully Register ' + firstName)
+          const response = {
+            response: 'Success',
+            action: 'Insert',
+            data,
+          }
+          res.json(response)
+        })
+      } else {
+        const response = {
+          response: 'Failed',
+          error: 'Email has been used',
+          action: 'Register',
+        }
+        res.json(response)
       }
-      res.json(response)
     })
   } else {
     const response = {
@@ -91,6 +107,7 @@ app.post('/tb_users2/update', (req, res) => {
   const phone = req.body.phone
   const mail = req.body.mail
   const dob = req.body.dob
+  let count = ''
 
   if (
     firstName &&
@@ -106,6 +123,10 @@ app.post('/tb_users2/update', (req, res) => {
     const sql =
       'UPDATE persons2 SET firstName = ?, lastName = ?, nis = ?, gender = ?, address = ?, phone = ?, mail = ?, dob = ? WHERE id = ' +
       id
+    const sql2 =
+      `SELECT mail, COUNT(mail) AS 'jumlah' FROM persons2 WHERE mail = '` +
+      mail +
+      `'`
     const updatedata = {
       firstName,
       lastName,
@@ -117,21 +138,34 @@ app.post('/tb_users2/update', (req, res) => {
       dob,
       id,
     }
-    database.query(
-      sql,
-      [firstName, lastName, nis, gender, address, phone, mail, dob],
-      (err, result) => {
-        if (err) throw err
+    database.query(sql2, (errc, resultsc, fields) => {
+      if (errc) throw errc
+      count = resultsc[0].jumlah
+      if (count <= 1) {
+        database.query(
+          sql,
+          [firstName, lastName, nis, gender, address, phone, mail, dob],
+          (err, result) => {
+            if (err) throw err
+            const response = {
+              response: 'Success',
+              id_item: id,
+              action: 'Update',
+              updatedata,
+            }
+            console.log('Successfully Updated ' + firstName + ' Data')
+            res.json(response)
+          }
+        )
+      } else {
         const response = {
-          response: 'Success',
-          id_item: id,
+          response: 'Failed',
+          error: 'Email has been used',
           action: 'Update',
-          updatedata,
         }
-        console.log('Successfully Updated ' + firstName + ' Data')
         res.json(response)
       }
-    )
+    })
   } else {
     const response = {
       response: 'Failed',

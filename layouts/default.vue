@@ -80,21 +80,21 @@ export default {
         //   title: 'Inspire',
         //   to: '/inspire',
         // },
-        {
-          icon: 'mdi-chart-bubble',
-          title: 'Users',
-          to: '/tb_users',
-        },
-        {
-          icon: 'mdi-chart-bubble',
-          title: 'Users2',
-          to: '/list_users',
-        },
         // {
         //   icon: 'mdi-chart-bubble',
-        //   title: 'Users3',
-        //   to: '/tbusers2',
+        //   title: 'Users',
+        //   to: '/tb_users',
         // },
+        // {
+        //   icon: 'mdi-chart-bubble',
+        //   title: 'Users2',
+        //   to: '/list_users',
+        // },
+        {
+          icon: 'mdi-chart-bubble',
+          title: 'Users3',
+          to: '/tbusers2',
+        },
       ],
       miniVariant: false,
       right: true,
